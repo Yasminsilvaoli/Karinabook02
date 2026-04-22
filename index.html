@@ -12,10 +12,9 @@
 <body>
 
     <header>
-        <div class="logo">
+        <a href="#home" class="logo">
             <img src="images/logo.png" alt="KarinaBook Logo">
-            <span>KarinaBook</span>
-        </div>
+        </a>
         
         <nav>
             <ul>
@@ -27,6 +26,18 @@
         </nav>
 
         <div class="nav-controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Pesquisar livros...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <button id="cart-toggle" title="Carrinho">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </button>
+            <button id="user-toggle" title="Minha Conta">
+                <i class="fas fa-user"></i>
+                <span class="user-text">Minha Conta</span>
+            </button>
             <button id="theme-toggle" title="Alternar Modo Escuro/Claro">
                 <i class="fas fa-moon"></i>
             </button>
@@ -39,20 +50,21 @@
     <main>
         <!-- Home / Hero Section -->
         <section id="home" class="hero">
-            <div class="showcase-container">
-                <div class="book-3d" id="book-element">
-                    <div class="book-face front">
-                        <img src="images/book1.png" alt="Livro em Destaque" id="showcase-img">
-                    </div>
-                    <div class="book-face back">
-                        <!-- Shared back image or same as front -->
-                        <img src="images/book1.png" alt="Parte de trás do livro" id="showcase-img-back">
+            <div class="hero-container">
+                <div class="hero-visual">
+                    <div class="orbital-container">
+                        <div class="hero-sphere"></div>
+                        <!-- Books will be injected here via JavaScript -->
                     </div>
                 </div>
-            </div>
-            <div class="book-info" id="book-info">
-                <h1 id="book-title">O Silêncio das Estrelas</h1>
-                <p id="book-author">Por Marina Silva</p>
+                
+                <div class="hero-content">
+                    <div class="book-info" id="book-info">
+                        <h1 id="book-title">O Silêncio das Estrelas</h1>
+                        <p id="book-author">Por Marina Silva</p>
+                        <button class="btn-buy-hero">Adicionar ao Carrinho</button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -78,47 +90,20 @@
             </div>
         </section>
 
-        <!-- Products & About Section -->
         <section id="produtos">
-            <h2 class="section-title">Produtos e História</h2>
+            <h2 class="section-title">Nossos Livros</h2>
             
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="images/book1.png" alt="Livro 1">
-                    </div>
-                    <div class="product-details">
-                        <h3>O Silêncio das Estrelas</h3>
-                        <p class="price">R$ 45,00</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="images/book2.png" alt="Livro 2">
-                    </div>
-                    <div class="product-details">
-                        <h3>Entre Páginas e Destinos</h3>
-                        <p class="price">R$ 52,90</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="images/book3.png" alt="Livro 3">
-                    </div>
-                    <div class="product-details">
-                        <h3>A Última Biblioteca</h3>
-                        <p class="price">R$ 39,90</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="images/book4.png" alt="Livro 4">
-                    </div>
-                    <div class="product-details">
-                        <h3>Sombras de Papel</h3>
-                        <p class="price">R$ 48,00</p>
-                    </div>
-                </div>
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="todos">Todos</button>
+                <button class="tab-btn" data-category="romance">Romance</button>
+                <button class="tab-btn" data-category="infantil">Infantil</button>
+                <button class="tab-btn" data-category="cristao">Cristão</button>
+                <button class="tab-btn" data-category="ajuda-profissional">Ajuda Profissional</button>
+                <button class="tab-btn" data-category="favoritos"><i class="fas fa-heart"></i> Favoritos</button>
+            </div>
+
+            <div class="products-grid" id="products-grid">
+                <!-- Products will be injected via JS -->
             </div>
 
             <div class="about-container" style="margin-top: 100px;">
@@ -177,6 +162,81 @@
             <li><a href="#contato"><i class="fas fa-envelope"></i><span>Contato</span></a></li>
         </ul>
     </nav>
+
+    <!-- Modals -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Seu Carrinho</h2>
+            <div id="cart-items">
+                <!-- Cart items list -->
+            </div>
+            <div class="cart-total">
+                <span>Total: R$ <span id="cart-total-value">0,00</span></span>
+            </div>
+            <button id="checkout-btn" class="btn-primary">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="login-tabs">
+                <button class="tab-btn active" data-form="login">Login</button>
+                <button class="tab-btn" data-form="register">Criar Conta</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+
+            <form id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" placeholder="Seu nome" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" placeholder="Crie uma senha" required>
+                </div>
+                <button type="submit" class="btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Finalizar Compra</h2>
+            <div class="payment-methods">
+                <h3>Escolha o método de pagamento:</h3>
+                <div class="method-option">
+                    <label><input type="radio" name="payment" value="credit" checked> Cartão de Crédito</label>
+                </div>
+                <div class="method-option">
+                    <label><input type="radio" name="payment" value="debit"> Cartão de Débito</label>
+                </div>
+                <div class="method-option">
+                    <label><input type="radio" name="payment" value="pix"> Pix</label>
+                </div>
+                <div class="method-option">
+                    <label><input type="radio" name="payment" value="boleto"> Boleto</label>
+                </div>
+            </div>
+            <button id="confirm-payment" class="btn-primary">Confirmar Pagamento</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
