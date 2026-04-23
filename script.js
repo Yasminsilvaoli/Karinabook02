@@ -75,6 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(cycleBooks, 5000); // 1s transition + 4s focus pause
     }
 
+    let sphereRotation = 0;
+
     function cycleBooks() {
         orbitalItems.forEach((item, index) => {
             const el = item.element;
@@ -94,6 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Rotate the sphere clockwise synchronously
+        sphereRotation += 72;
+        const sphere = document.querySelector('.hero-sphere');
+        if (sphere) {
+            sphere.style.setProperty('--sphere-rotation', `${sphereRotation}deg`);
+        }
+
         focalIndex = (focalIndex + 1) % orbitalItems.length;
     }
 
@@ -104,6 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             bookTitle.textContent = book.title;
             bookAuthor.textContent = `Por ${book.author}`;
+            
+            const btnBuyHero = document.querySelector('.btn-buy-hero');
+            if (btnBuyHero) {
+                btnBuyHero.onclick = () => addToCart(book.id);
+            }
+            
             info.classList.add('active');
         }, 400);
     }
@@ -356,4 +371,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     init();
+    // Mouse pink trail effect
+    const mouseTrail = document.createElement('div');
+    mouseTrail.className = 'mouse-trail';
+    document.body.appendChild(mouseTrail);
+    document.addEventListener('mousemove', (e) => {
+        mouseTrail.style.left = `${e.clientX}px`;
+        mouseTrail.style.top = `${e.clientY}px`;
+    });
 });
