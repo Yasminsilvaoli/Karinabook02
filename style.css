@@ -18,10 +18,10 @@
 }
 
 [data-theme="dark"] {
-    --bg-color: #000000;
-    --text-color: #f5f5f5;
-    --primary-pink: #FF69B4; /* Swapped or softened for dark */
-    --secondary-pink: #FF1493;
+    --bg-color: #050005; /* Deeper black/purple */
+    --text-color: #ffffff;
+    --primary-pink: #FF1493; /* Keep it vibrant */
+    --secondary-pink: #FF69B4;
     --card-bg: #121212;
     --nav-bg: rgba(0, 0, 0, 0.9);
     --border-color: rgba(255, 255, 255, 0.15);
@@ -761,18 +761,139 @@ input:focus, textarea:focus {
 .hero-sphere {
     width: 800px;
     height: 800px;
-    background: radial-gradient(circle at 70% 30%, var(--secondary-pink) 10%, var(--primary-pink) 50%, rgba(25, 0, 15, 0.8) 95%);
+    background: 
+        radial-gradient(circle at 70% 30%, var(--secondary-pink) 10%, var(--primary-pink) 50%, rgba(25, 0, 15, 0.9) 95%),
+        repeating-conic-gradient(from 0deg, transparent 0deg, transparent 30deg, rgba(255, 255, 255, 0.05) 31deg, rgba(255, 255, 255, 0.05) 32deg);
     border-radius: 50%;
     box-shadow: 
-        0 0 100px rgba(255, 20, 147, 0.3),
-        inset -50px -50px 100px rgba(0,0,0,0.4),
-        inset 50px 50px 100px rgba(255,255,255,0.1);
+        0 0 150px rgba(255, 20, 147, 0.5),
+        inset -50px -50px 100px rgba(0,0,0,0.6),
+        inset 50px 50px 100px rgba(255,255,255,0.2);
     position: absolute;
     left: -400px; /* Hemisphere effect */
     top: 50%;
     transform: translateY(-50%) rotate(var(--sphere-rotation, 0deg));
     z-index: 5;
     transition: transform 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Pattern to make rotation extremely visible */
+.hero-sphere::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        conic-gradient(transparent, rgba(255, 255, 255, 0.2) 10%, transparent 20%),
+        radial-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+    background-size: 100% 100%, 50px 50px;
+    opacity: 0.8;
+    border-radius: 50%;
+}
+
+/* Static gloss overlay that doesn't rotate */
+.hero-sphere::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    border-radius: 50%;
+    pointer-events: none;
+    /* We need to counteract the parent's rotation to keep the gloss static */
+    transform: rotate(calc(-1 * var(--sphere-rotation, 0deg)));
+    transition: transform 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.butterfly-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 100; /* High z-index to stay visible */
+}
+
+.butterfly-main {
+    width: 180px;
+    height: 180px;
+    top: 150px; /* Moved down */
+    left: 200px;
+    animation: butterfly-flight-1 20s ease-in-out infinite;
+}
+
+.butterfly-medium {
+    width: 100px;
+    height: 100px;
+    top: 50px; /* Moved down */
+    left: 50px;
+    animation: butterfly-flight-2 16s ease-in-out infinite;
+}
+
+.butterfly-small {
+    width: 60px;
+    height: 60px;
+    top: 350px; /* Moved down */
+    left: 150px;
+    animation: butterfly-flight-3 12s ease-in-out infinite;
+}
+
+.butterfly-container.state-interacting {
+    animation: butterfly-land 4s ease-in-out forwards !important;
+}
+
+@keyframes butterfly-land {
+    0% { transform: translate(-50%, -50%) translate3d(0, 0, 0) rotate(0); }
+    20% { transform: translate(-50%, -50%) translate3d(50px, 0, 300px) rotate(15deg); }
+    50% { transform: translate(-50%, -50%) translate3d(120px, 50px, 550px) rotate(-10deg) scale(1.4); } /* LANDING POINT close to book */
+    80% { transform: translate(-50%, -50%) translate3d(100px, 20px, 500px) rotate(5deg) scale(1.2); }
+    100% { transform: translate(-50%, -50%) translate3d(450px, -200px, 100px) rotate(30deg) opacity(0); }
+}
+
+.sphere-butterfly {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+    animation: butterfly-flap 0.5s ease-in-out infinite alternate;
+}
+
+[data-theme="dark"] .sphere-butterfly {
+    filter: brightness(1.5) drop-shadow(0 0 12px rgba(255, 105, 180, 0.6));
+}
+
+@keyframes butterfly-flight-1 {
+    0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-50%, -50%) translate(150px, -150px) rotate(20deg); }
+    50% { transform: translate(-50%, -50%) translate(-250px, 150px) rotate(-15deg); }
+    75% { transform: translate(-50%, -50%) translate(200px, 50px) rotate(10deg); }
+}
+
+@keyframes butterfly-flight-2 {
+    0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(10deg); }
+    33% { transform: translate(-50%, -50%) translate(-250px, 250px) rotate(-20deg); }
+    66% { transform: translate(-50%, -50%) translate(150px, -100px) rotate(30deg); }
+}
+
+@keyframes butterfly-flight-3 {
+    0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(-10deg); }
+    20% { transform: translate(-50%, -50%) translate(150px, 100px) rotate(45deg); }
+    40% { transform: translate(-50%, -50%) translate(-150px, -150px) rotate(-45deg); }
+    60% { transform: translate(-50%, -50%) translate(200px, -50px) rotate(60deg); }
+    80% { transform: translate(-50%, -50%) translate(-50px, 200px) rotate(-60deg); }
+}
+
+@keyframes butterfly-flap {
+    from {
+        transform: scaleX(1) rotate(0deg);
+    }
+    to {
+        transform: scaleX(0.4) rotate(5deg);
+    }
 }
 
 .modal {

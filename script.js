@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Focus current book
                 el.classList.add('state-focused');
                 updateHeroContent(item.book);
+                
+                // Butterfly interaction
+                interactButterfly();
             } else if (index === (focalIndex - 1 + orbitalItems.length) % orbitalItems.length) {
                 // Animate previous book leaving (contornando)
                 el.classList.add('state-leaving');
@@ -104,6 +107,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         focalIndex = (focalIndex + 1) % orbitalItems.length;
+    }
+
+    function interactButterfly() {
+        const butterflies = document.querySelectorAll('.butterfly-container');
+        const randomIdx = Math.floor(Math.random() * butterflies.length);
+        const b = butterflies[randomIdx];
+        
+        b.classList.add('state-interacting');
+        
+        setTimeout(() => {
+            b.classList.remove('state-interacting');
+        }, 4000);
     }
 
     function updateHeroContent(book) {
