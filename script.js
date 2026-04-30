@@ -38,11 +38,56 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialization ---
     function init() {
         renderProducts();
-        initOrbitalAnimation();
         updateCartUI();
         setupTheme();
         setupEventListeners();
         createParticles();
+        initCheckoutSimulation();
+        setupBookQuotes();
+        initOrbitalAnimation();
+        
+        // Setup Hero Button
+        const btnBuyHero = document.querySelector('.btn-buy-hero');
+        if (btnBuyHero) {
+            btnBuyHero.onclick = () => addToCart(1); // Default to first book
+        }
+    }
+
+    // --- Book Quotes Logic ---
+    const bookQuotes = [
+        "“Entre páginas e sonhos, cada história revela novos mundos.”",
+        "“A leitura transforma o comum em extraordinário.”",
+        "“Descubra aventuras, emoções e infinitas possibilidades.”",
+        "“Um livro é um sonho que você segura nas mãos.”",
+        "“Ler é viajar sem sair do lugar.”",
+        "“Grandes histórias começam com o virar de uma página.”",
+        "“O conhecimento é a única riqueza que ninguém pode tirar.”",
+        "“Cada livro lido é um degrau na escada da sabedoria.”"
+    ];
+
+    let currentQuoteIndex = 0;
+
+    function setupBookQuotes() {
+        const book = document.getElementById('interactive-book');
+        if (!book) return;
+
+        book.addEventListener('click', () => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % bookQuotes.length;
+            
+            const leftP = document.querySelector('#book-page-left p');
+            const rightP = document.querySelector('#book-page-right p');
+            const flipP = document.querySelector('#book-page-flip p');
+
+            if (leftP) leftP.textContent = bookQuotes[currentQuoteIndex];
+            if (rightP) rightP.textContent = bookQuotes[(currentQuoteIndex + 1) % bookQuotes.length];
+            if (flipP) flipP.textContent = bookQuotes[(currentQuoteIndex + 2) % bookQuotes.length];
+            
+            // Visual feedback
+            book.style.transform = 'scale(1.05) rotateX(15deg) rotateY(-5deg)';
+            setTimeout(() => {
+                book.style.transform = '';
+            }, 200);
+        });
     }
 
     // --- Theme Logic ---
@@ -53,7 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateThemeIcon() {
         const icon = themeToggle.querySelector('i');
-        icon.className = document.documentElement.getAttribute('data-theme') === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        if (icon) {
+            icon.className = document.documentElement.getAttribute('data-theme') === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
     }
 
     // --- Spherical Animation Logic ---
@@ -61,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let focalIndex = 0;
 
     function initOrbitalAnimation() {
+        if (!orbitalContainer) return;
         const heroBooks = books.slice(0, 5);
         heroBooks.forEach((book, index) => {
             const item = document.createElement('div');
@@ -111,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function interactButterfly() {
         const butterflies = document.querySelectorAll('.butterfly-container');
+        if (butterflies.length === 0) return;
         const randomIdx = Math.floor(Math.random() * butterflies.length);
         const b = butterflies[randomIdx];
         
@@ -123,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateHeroContent(book) {
         const info = document.getElementById('book-info');
+        if (!info) return;
         info.classList.remove('active');
         
         setTimeout(() => {
@@ -315,6 +365,38 @@ document.addEventListener('DOMContentLoaded', () => {
             tabBtns[0].classList.add('active');
         });
         
+        // Final Contact Form Submission (via Formspree AJAX)
+        const contactForm = document.querySelector('#contato form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const submitBtn = contactForm.querySelector('.btn-submit');
+                const originalText = submitBtn.textContent;
+                const formData = new FormData(contactForm);
+                
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
+                
+                fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        showNotification('Mensagem enviada com sucesso! Karina receberá em breve.');
+                        contactForm.reset();
+                    } else {
+                        showNotification('Ops! Ocorreu um erro. Verifique os campos e tente novamente.');
+                    }
+                }).catch(() => {
+                    showNotification('Erro de conexão ao enviar a mensagem.');
+                }).finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                });
+            });
+        }
+        
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
@@ -329,25 +411,208 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('checkout-btn').addEventListener('click', () => {
             if (cart.length === 0) {
-                alert('Seu carrinho está vazio!');
+                showNotification('Seu carrinho está vazio!');
                 return;
             }
             cartModal.classList.remove('active');
             checkoutModal.classList.add('active');
         });
-
-        document.getElementById('confirm-payment').addEventListener('click', () => {
-            alert('Parabéns! Sua compra foi realizada com sucesso (Simulação).');
-            cart = [];
-            saveCart();
-            updateCartUI();
-            checkoutModal.classList.remove('active');
-        });
-
         // Mobile Menu
         document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
             document.querySelector('nav ul').classList.toggle('active');
         });
+    }
+
+    function initCheckoutSimulation() {
+        const checkoutModal = document.getElementById('checkout-modal');
+        const paymentForm = document.getElementById('payment-form');
+        if (!paymentForm) return;
+
+        const cardVisual = document.getElementById('card-visual');
+        const cardNumInput = document.getElementById('card-number');
+        const cardNameInput = document.getElementById('card-name');
+        const cardExpiryInput = document.getElementById('card-expiry');
+        const cardCvvInput = document.getElementById('card-cvv');
+        
+        const numDisplay = document.getElementById('card-number-display');
+        const nameDisplay = document.getElementById('card-name-display');
+        const expiryDisplay = document.getElementById('card-expiry-display');
+        const cvvDisplay = document.getElementById('card-cvv-display');
+        const frontLogo = document.getElementById('card-logo-front');
+
+        const btnSubmit = document.getElementById('confirm-payment');
+        const btnText = btnSubmit.querySelector('.btn-text');
+        const loader = btnSubmit.querySelector('.loader');
+
+        // Card Logic
+        cardNumInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            e.target.value = formatted;
+            numDisplay.textContent = formatted || '#### #### #### ####';
+            
+            if (value.startsWith('4')) frontLogo.innerHTML = '<i class="fab fa-cc-visa"></i>';
+            else if (value.startsWith('5')) frontLogo.innerHTML = '<i class="fab fa-cc-mastercard"></i>';
+            else if (value.startsWith('3')) frontLogo.innerHTML = '<i class="fab fa-cc-amex"></i>';
+            else frontLogo.innerHTML = '';
+        });
+
+        cardNameInput.addEventListener('input', (e) => {
+            nameDisplay.textContent = e.target.value.toUpperCase() || 'NOME NO CARTÃO';
+        });
+
+        cardExpiryInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+            expiryDisplay.textContent = value || 'MM/AA';
+        });
+
+        cardCvvInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            cvvDisplay.textContent = '*'.repeat(value.length) || '***';
+        });
+
+        cardCvvInput.addEventListener('focus', () => cardVisual.classList.add('flipped'));
+        cardCvvInput.addEventListener('blur', () => cardVisual.classList.remove('flipped'));
+
+        // Payment Method Toggle
+        const methodChips = document.querySelectorAll('.method-chip');
+        const cardFields = document.getElementById('card-details-fields');
+        const pixFields = document.getElementById('pix-details');
+        const pixStatus = document.getElementById('pix-status');
+
+        methodChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                methodChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const radio = chip.querySelector('input');
+                radio.checked = true;
+
+                if (radio.value === 'pix') {
+                    cardFields.style.display = 'none';
+                    pixFields.style.display = 'block';
+                    cardVisual.style.opacity = '0.3';
+                    btnText.textContent = 'Gerar QR Code';
+                    pixStatus.style.display = 'none'; // Hide status until generated
+                } else {
+                    cardFields.style.display = 'block';
+                    pixFields.style.display = 'none';
+                    cardVisual.style.opacity = '1';
+                    btnText.textContent = 'Confirmar Pagamento';
+                }
+            });
+        });
+
+        // Pix Copy Logic
+        document.getElementById('btn-copy-pix').addEventListener('click', () => {
+            const pixCode = document.getElementById('pix-code');
+            pixCode.select();
+            document.execCommand('copy');
+            showNotification('Código Pix copiado!');
+        });
+
+        // Pix Simulate Paid Button
+        document.getElementById('btn-simulate-paid').addEventListener('click', () => {
+            const total = document.getElementById('cart-total-value').textContent;
+            showNotification(`Pix de R$ ${total} recebido!`);
+            
+            setTimeout(() => {
+                showNotification('Compra realizada com sucesso! Preparando seu pedido...');
+                setTimeout(() => {
+                    finishPurchase();
+                }, 2000);
+            }, 1500);
+        });
+
+        // Form Submit
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const method = paymentForm.querySelector('input[name="payment"]:checked').value;
+
+            if (method === 'pix') {
+                if (pixStatus.style.display === 'none') {
+                    // Phase 1: Generate
+                    btnSubmit.disabled = true;
+                    btnText.textContent = 'Gerando...';
+                    loader.style.display = 'inline-block';
+                    
+                    setTimeout(() => {
+                        pixStatus.style.display = 'block';
+                        btnSubmit.disabled = false;
+                        btnText.textContent = 'Já paguei!';
+                        loader.style.display = 'none';
+                        showNotification('QR Code gerado! Cole o código no seu app.');
+                    }, 1500);
+                } else {
+                    // Phase 2: Wait for simulated bank confirm
+                    btnSubmit.disabled = true;
+                    btnText.textContent = 'Aguardando confirmação...';
+                    loader.style.display = 'inline-block';
+                    
+                    setTimeout(() => {
+                        const total = document.getElementById('cart-total-value').textContent;
+                        showNotification(`Pix de R$ ${total} recebido!`);
+                        
+                        setTimeout(() => {
+                            showNotification('Compra realizada com sucesso! Preparando seu pedido...');
+                            setTimeout(() => {
+                                finishPurchase();
+                            }, 2000);
+                        }, 1500);
+                    }, 20000); // 20 seconds "tolerance" as requested
+                }
+            } else {
+                // Manual validation check for card fields
+                const num = cardNumInput.value;
+                const name = cardNameInput.value;
+                const exp = cardExpiryInput.value;
+                const cvv = cardCvvInput.value;
+
+                if (!num || !name || !exp || !cvv) {
+                    showNotification('Por favor, preencha todos os dados do cartão!');
+                    return;
+                }
+
+                // Card flow
+                btnSubmit.disabled = true;
+                btnText.textContent = 'Processando...';
+                loader.style.display = 'inline-block';
+
+                setTimeout(() => {
+                    finishPurchase();
+                }, 2500);
+            }
+        });
+
+        function finishPurchase() {
+            alert('Parabéns! Sua compra foi realizada com sucesso.');
+            cart = [];
+            saveCart();
+            updateCartUI();
+            checkoutModal.classList.remove('active');
+            
+            // Reset for next time
+            btnSubmit.disabled = false;
+            btnText.textContent = 'Confirmar Pagamento';
+            loader.style.display = 'none';
+            paymentForm.reset();
+            numDisplay.textContent = '#### #### #### ####';
+            nameDisplay.textContent = 'NOME NO CARTÃO';
+            expiryDisplay.textContent = 'MM/AA';
+            cvvDisplay.textContent = '***';
+            frontLogo.innerHTML = '';
+            pixFields.style.display = 'none';
+            cardFields.style.display = 'block';
+            cardVisual.style.opacity = '1';
+        }
     }
 
     function createParticles() {
