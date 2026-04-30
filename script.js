@@ -463,9 +463,27 @@ document.addEventListener('DOMContentLoaded', () => {
             checkoutModal.classList.add('active');
         });
         // Mobile Menu
-        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
-            document.querySelector('nav ul').classList.toggle('active');
-        });
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navUl = document.querySelector('nav ul');
+        
+        if (mobileMenuBtn && navUl) {
+            mobileMenuBtn.addEventListener('click', () => {
+                navUl.classList.toggle('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) {
+                    icon.className = navUl.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+                }
+            });
+
+            // Close menu when clicking a link
+            navUl.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navUl.classList.remove('active');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
+                });
+            });
+        }
     }
 
     function initCheckoutSimulation() {
