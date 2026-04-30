@@ -1603,7 +1603,7 @@ input:focus, textarea:focus {
     position: relative;
     transform-style: preserve-3d;
     transform: rotateX(20deg) rotateY(-30deg) rotateZ(-5deg);
-    transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .book-3d-wrapper:hover .book-3d {
@@ -1622,6 +1622,18 @@ input:focus, textarea:focus {
     box-shadow: 
         inset 5px 0 25px rgba(0,0,0,0.15),
         inset -5px 0 15px rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.book-spine::after {
+    content: 'Karinabook';
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: rgba(0,0,0,0.2);
+    transform: rotate(90deg);
+    white-space: nowrap;
 }
 
 .book-cover {
@@ -1638,8 +1650,48 @@ input:focus, textarea:focus {
     transform-origin: left;
     transform: translateZ(60px); /* Adjusted for 120px total thickness */
     z-index: 10;
-    background: linear-gradient(135deg, #fce4ec 0%, #f4c2c2 100%);
-    border-left: 1px solid rgba(255,255,255,0.5);
+    background: #f4c2c2 linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('images/rabbit_cover.png');
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 215, 0, 0.3); /* Subtle gold border */
+    border-left: 5px solid rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.1), 10px 10px 30px rgba(0,0,0,0.2);
+    transform-style: preserve-3d;
+}
+
+.book-cover.front::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    pointer-events: none;
+}
+
+.cover-inside {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fdfaf0;
+    transform: rotateY(180deg) translateZ(1px);
+    backface-visibility: hidden;
+    border-radius: 14px 4px 4px 14px;
+    box-shadow: inset 10px 0 30px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-inside::after {
+    content: 'KarinaBook';
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: rgba(141, 122, 110, 0.3);
+    transform: rotate(-90deg);
 }
 
 .book-3d-wrapper:hover .book-cover.front {
@@ -1662,6 +1714,7 @@ input:focus, textarea:focus {
     transform-style: preserve-3d;
     z-index: 5;
     transform: translateZ(0px);
+    transform-style: preserve-3d;
 }
 
 /* Enhanced Multiple Page Layers for "Full" look */
@@ -1693,6 +1746,7 @@ input:focus, textarea:focus {
     box-shadow: inset 0 0 25px rgba(0,0,0,0.07);
     transform-origin: left;
     transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-style: preserve-3d;
 }
 
 .page-base.left {
@@ -1710,17 +1764,7 @@ input:focus, textarea:focus {
     background: #fcf9eb;
 }
 
-.page-content {
-    padding: 40px 25px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    pointer-events: none;
-    backface-visibility: hidden;
-}
-
-.page-content p {
+.page-content p, .page-side p {
     font-family: 'Playfair Display', serif;
     font-size: 0.9rem;
     color: #8d7a6e;
@@ -1728,6 +1772,50 @@ input:focus, textarea:focus {
     font-style: italic;
     margin-bottom: 12px;
     text-align: justify;
+}
+
+.page-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 40px 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    pointer-events: none;
+    backface-visibility: hidden;
+    background: #fdfaf0;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.05);
+}
+
+.page-side::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 30px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+    pointer-events: none;
+}
+
+.page-front::before {
+    left: 0;
+}
+
+.page-back::before {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.05), transparent);
+}
+
+.page-front {
+    z-index: 2;
+    border-radius: 0 8px 8px 0;
+}
+
+.page-back {
+    z-index: 1;
+    transform: rotateY(180deg);
+    border-radius: 8px 0 0 8px;
 }
 
 .text-line {
@@ -1743,6 +1831,7 @@ input:focus, textarea:focus {
     background: #fdfaf0;
     transform-origin: left;
     transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-style: preserve-3d;
     box-shadow: -8px 0 25px rgba(0,0,0,0.04);
     border-radius: 0 8px 8px 0;
     z-index: 6;
@@ -1760,7 +1849,37 @@ input:focus, textarea:focus {
 }
 
 .book-3d-wrapper:hover .page-flip.second {
-    transform: translateZ(56px) rotateY(-130deg);
+    transform: translate3d(56px, 0, 0) rotateY(-130deg);
+}
+
+.page-flip.third {
+    z-index: 4;
+    transition-delay: 0.2s;
+    transform: translateZ(54px);
+}
+
+.book-3d-wrapper:hover .page-flip.third {
+    transform: translate3d(54px, 0, 0) rotateY(-115deg);
+}
+
+.page-flip.fourth {
+    z-index: 3;
+    transition-delay: 0.3s;
+    transform: translateZ(52px);
+}
+
+.book-3d-wrapper:hover .page-flip.fourth {
+    transform: translate3d(52px, 0, 0) rotateY(-100deg);
+}
+
+.page-flip.fifth {
+    z-index: 2;
+    transition-delay: 0.4s;
+    transform: translateZ(50px);
+}
+
+.book-3d-wrapper:hover .page-flip.fifth {
+    transform: translate3d(50px, 0, 0) rotateY(-85deg);
 }
 
 .book-shadow {

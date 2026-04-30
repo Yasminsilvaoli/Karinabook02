@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('KarinaBook: DOM Content Loaded. Initializing...');
     // --- State Management ---
     let cart = JSON.parse(localStorage.getItem('karina_cart')) || [];
     let favorites = JSON.parse(localStorage.getItem('karina_favorites')) || [];
@@ -51,6 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnBuyHero) {
             btnBuyHero.onclick = () => addToCart(1); // Default to first book
         }
+        
+        // Debugging badge (visible confirmation)
+        const badge = document.createElement('div');
+        badge.style.cssText = 'position:fixed; top:10px; right:10px; background:rgba(0,0,0,0.5); color:lime; padding:5px 10px; border-radius:5px; font-size:10px; z-index:9999; pointer-events:none;';
+        badge.textContent = 'System Active';
+        document.body.appendChild(badge);
+        setTimeout(() => badge.remove(), 5000);
+
+        console.log('KarinaBook: Initialization complete.');
     }
 
     // --- Book Quotes Logic ---
@@ -62,7 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
         "“Ler é viajar sem sair do lugar.”",
         "“Grandes histórias começam com o virar de uma página.”",
         "“O conhecimento é a única riqueza que ninguém pode tirar.”",
-        "“Cada livro lido é um degrau na escada da sabedoria.”"
+        "“Cada livro lido é um degrau na escada da sabedoria.”",
+        "“A alma que lê é uma alma que nunca está sozinha.”",
+        "“Livros são espelhos da alma e janelas para o mundo.”",
+        "“Onde há um livro, há um caminho para a liberdade.”",
+        "“Ler é um ato de coragem e descoberta constante.”",
+        "“As palavras têm o poder de mudar o seu destino.”"
     ];
 
     let currentQuoteIndex = 0;
@@ -76,11 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const leftP = document.querySelector('#book-page-left p');
             const rightP = document.querySelector('#book-page-right p');
-            const flipP = document.querySelector('#book-page-flip p');
+            
+            // Back faces (left side when flipped)
+            const b1 = document.querySelector('#book-page-flip-b p');
+            const b2 = document.querySelector('#book-page-flip-2b p');
+            const b3 = document.querySelector('#book-page-flip-3b p');
+            const b4 = document.querySelector('#book-page-flip-4b p');
+            const b5 = document.querySelector('#book-page-flip-5b p');
+
+            // Front faces (right side when flipping/closed)
+            const f1 = document.querySelector('#book-page-flip-f p');
+            const f2 = document.querySelector('#book-page-flip-2f p');
+            const f3 = document.querySelector('#book-page-flip-3f p');
+            const f4 = document.querySelector('#book-page-flip-4f p');
+            const f5 = document.querySelector('#book-page-flip-5f p');
 
             if (leftP) leftP.textContent = bookQuotes[currentQuoteIndex];
             if (rightP) rightP.textContent = bookQuotes[(currentQuoteIndex + 1) % bookQuotes.length];
-            if (flipP) flipP.textContent = bookQuotes[(currentQuoteIndex + 2) % bookQuotes.length];
+            
+            if (b1) b1.textContent = bookQuotes[(currentQuoteIndex + 2) % bookQuotes.length];
+            if (b2) b2.textContent = bookQuotes[(currentQuoteIndex + 3) % bookQuotes.length];
+            if (b3) b3.textContent = bookQuotes[(currentQuoteIndex + 4) % bookQuotes.length];
+            if (b4) b4.textContent = bookQuotes[(currentQuoteIndex + 5) % bookQuotes.length];
+            if (b5) b5.textContent = bookQuotes[(currentQuoteIndex + 6) % bookQuotes.length];
+
+            if (f1) f1.textContent = bookQuotes[(currentQuoteIndex + 7) % bookQuotes.length];
+            if (f2) f2.textContent = bookQuotes[(currentQuoteIndex + 8) % bookQuotes.length];
+            if (f3) f3.textContent = bookQuotes[(currentQuoteIndex + 9) % bookQuotes.length];
+            if (f4) f4.textContent = bookQuotes[(currentQuoteIndex + 10) % bookQuotes.length];
+            if (f5) f5.textContent = bookQuotes[(currentQuoteIndex + 11) % bookQuotes.length];
             
             // Visual feedback
             book.style.transform = 'scale(1.05) rotateX(15deg) rotateY(-5deg)';
@@ -118,9 +157,15 @@ document.addEventListener('DOMContentLoaded', () => {
             orbitalItems.push({ element: item, book: book });
         });
         
-        // Start the first cycle immediately
-        cycleBooks();
-        setInterval(cycleBooks, 5000); // 1s transition + 4s focus pause
+        console.log(`KarinaBook: Orbital animation initialized with ${orbitalItems.length} items.`);
+        
+        if (orbitalItems.length > 0) {
+            // Start the first cycle immediately
+            cycleBooks();
+            setInterval(cycleBooks, 5000); // 1s transition + 4s focus pause
+        } else {
+            console.error('KarinaBook: No orbital items to animate.');
+        }
     }
 
     let sphereRotation = 0;
